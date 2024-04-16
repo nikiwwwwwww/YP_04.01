@@ -1,48 +1,40 @@
 package com.example.pr2.dao;
 
+import com.example.pr2.Repository.TypeRepository;
 import com.example.pr2.models.Type;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class TypeDAO {
-    private static int TYPES_COUNT;
-    private final List<Type> types;
+    private final TypeRepository typeRepository;
 
-    {
-        types = new ArrayList<>();
-
-        types.add(new Type(++TYPES_COUNT, "Type1", "Description1", "Category1"));
-        types.add(new Type(++TYPES_COUNT, "Type2", "Description2", "Category2"));
-        types.add(new Type(++TYPES_COUNT, "Type3", "Description3", "Category3"));
+    @Autowired
+    public TypeDAO(TypeRepository typeRepository) {
+        this.typeRepository = typeRepository;
     }
-
     public List<Type> index() {
-        return types;
+        return typeRepository.findAll();
     }
-
     public Type show(int id) {
-        return types.stream().filter(type -> type.getId() == id).findAny().orElse(null);
+        return typeRepository.findById(id).orElse(null);
     }
 
     public void save(Type type) {
-        type.setId(++TYPES_COUNT);
-        types.add(type);
+        typeRepository.save(type);
     }
-
-    public void update(int id, Type updatedType) {
+    public void update(int id, Type updatedtype) {
         Type typeToBeUpdated = show(id);
-
         if (typeToBeUpdated != null) {
-            typeToBeUpdated.setName(updatedType.getName());
-            typeToBeUpdated.setDescription(updatedType.getDescription());
-            typeToBeUpdated.setCategory(updatedType.getCategory());
+            typeToBeUpdated.setName(updatedtype.getName());
+            typeToBeUpdated.setDescription(updatedtype.getDescription());
+            typeToBeUpdated.setCategory(updatedtype.getCategory());
+            typeRepository.save(updatedtype);
         }
     }
-
     public void delete(int id) {
-        types.removeIf(t -> t.getId() == id);
+        typeRepository.deleteById(id);
     }
 }

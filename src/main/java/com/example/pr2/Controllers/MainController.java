@@ -1,13 +1,16 @@
 package com.example.pr2.Controllers;
 
+import com.example.pr2.Repository.*;
 import com.example.pr2.dao.*;
 import com.example.pr2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -27,14 +30,38 @@ public class MainController {
     @Autowired
     private TypeDAO typeDAO;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private TypeRepository typeRepository;
+
     @GetMapping("/")
     public String Main(Model model) {
         return "Main";
     }
 
     @GetMapping("/Products")
-    public String products(Model model) {
-        model.addAttribute("products", productDAO.index());
+    public String products(@RequestParam(name = "search", required = false) String search, Model model) {
+
+        List<Product> products;
+
+        if (StringUtils.hasText(search)) {
+            products = productRepository.findByNameContaining(search);
+        } else {
+            products = productRepository.findAll();
+        }
+
+        model.addAttribute("products", products);
         return "Products";
     }
 
@@ -70,8 +97,17 @@ public class MainController {
 
 
     @GetMapping("/Orders")
-    public String Orders(Model model) {
-        model.addAttribute("orders", orderDAO.index());
+    public String Orders(@RequestParam(name = "search", required = false) String search, Model model) {
+
+        List<Order> orders;
+
+        if (StringUtils.hasText(search)) {
+            orders = orderRepository.findByNameContaining(search);
+        } else {
+            orders = orderRepository.findAll();
+        }
+
+        model.addAttribute("orders", orders);
         return "Orders";
     }
 
@@ -107,8 +143,17 @@ public class MainController {
 
 
     @GetMapping("/Persons")
-    public String Persons(Model model) {
-        model.addAttribute("persons", personDAO.index());
+    public String Persons(@RequestParam(name = "search", required = false) String search, Model model) {
+
+        List<Person> persons;
+
+        if (StringUtils.hasText(search)) {
+            persons = personRepository.findByUsernameContaining(search);
+        } else {
+            persons = personRepository.findAll();
+        }
+
+        model.addAttribute("persons", persons);
         return "Persons";
     }
 
@@ -146,10 +191,20 @@ public class MainController {
 
 
     @GetMapping("/Posts")
-    public String Posts(Model model) {
-        model.addAttribute("posts", postDAO.index());
+    public String Posts(@RequestParam(name = "search", required = false) String search, Model model) {
+
+        List<Post> posts;
+
+        if (StringUtils.hasText(search)) {
+            posts = postRepository.findByNameContaining(search);
+        } else {
+            posts = postRepository.findAll();
+        }
+
+        model.addAttribute("posts", posts);
         return "Posts";
     }
+
 
     @PostMapping("/addPost")
     public String addPost(@RequestParam("name") String name,
@@ -183,11 +238,19 @@ public class MainController {
 
 
     @GetMapping("/Types")
-    public String Types(Model model) {
-        model.addAttribute("types", typeDAO.index());
+    public String Types(@RequestParam(name = "search", required = false) String search, Model model) {
+
+        List<Type> types;
+
+        if (StringUtils.hasText(search)) {
+            types = typeRepository.findByNameContaining(search);
+        } else {
+            types = typeRepository.findAll();
+        }
+
+        model.addAttribute("types", types);
         return "Types";
     }
-
     @PostMapping("/addType")
     public String addType(@RequestParam("name") String name,
                            @RequestParam("description") String description,

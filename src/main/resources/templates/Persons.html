@@ -16,6 +16,16 @@
         <li><a th:href="@{/Types}">Types</a></li>
     </ul>
 </nav>
+
+<br>
+<form th:action="@{/Persons}" method="get">
+    <h3><label for="search">Search by username:</label></h3>
+    <input type="text" id="search" class="form-control" name="search" />
+    <br>
+    <button type="submit" class="operator btn btn-info">Search</button>
+</form>
+<br>
+
 <h2>Persons</h2>
 
 <table class="table table-hover">

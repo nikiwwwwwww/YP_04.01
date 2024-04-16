@@ -16,6 +16,16 @@
         <li><a th:href="@{/Types}">Types</a></li>
     </ul>
 </nav>
+
+<br>
+<form th:action="@{/Products}" method="get">
+    <h3><label for="search">Search by name:</label></h3>
+    <input type="text" id="search" class="form-control" name="search" />
+    <br>
+    <button type="submit" class="operator btn btn-info">Search</button>
+</form>
+<br>
+
 <h2>Products</h2>
 <table class="table table-hover">
     <thead>
