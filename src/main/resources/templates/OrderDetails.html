@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Details Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/Orders}">Orders</a></li>
+        <li><a th:href="@{/OrderDetails}">Order Details</a></li>
+    </ul>
+</nav>
+
+<h2>Order Details</h2>
+
+<table class="table table-hover">
+    <thead>
+    <tr class="table-secondary">
+        <th class="table-secondary">ID</th>
+        <th class="table-secondary">Order</th>
+        <th class="table-secondary">Details</th>
+        <th class="table-secondary">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="orderDetail : ${orderDetails}">
+        <td th:text="${orderDetail.id}"></td>
+        <td th:text="${orderDetail.order.name}"></td>
+        <td th:text="${orderDetail.details}"></td>
+        <td>
+            <a th:href="@{/editOrderDetail/{id}(id=${orderDetail.id})}">Edit</a> |
+            <a th:href="@{/deleteOrderDetail/{id}(id=${orderDetail.id})}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Add Order Detail</h3>
+<form th:action="@{/addOrderDetail}" method="post">
+    <label>Order:
+        <select class="form-control" name="orderId">
+            <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.name}"></option>
+        </select>
+    </label>
+    <label>Details: <input class="form-control" type="text" name="details"></label>
+    <button type="submit" class="operator btn btn-info">Add</button>
+</form>
+
+</body>
+</html>

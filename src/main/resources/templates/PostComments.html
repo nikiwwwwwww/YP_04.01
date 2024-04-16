@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Comments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><a th:href="@{/Products}">Products</a></li>
+        <li><a th:href="@{/Orders}">Orders</a></li>
+        <li><a th:href="@{/Persons}">Persons</a></li>
+        <li><a th:href="@{/Posts}">Posts</a></li>
+        <li><a th:href="@{/Types}">Types</a></li>
+        <li><a th:href="@{/PostComments}">Post Comments</a></li>
+    </ul>
+</nav>
+
+<br>
+<h2>Post Comments</h2>
+
+<table class="table table-hover">
+    <thead>
+    <tr class="table-secondary">
+        <th class="table-secondary">ID</th>
+        <th class="table-secondary">Post</th>
+        <th class="table-secondary">Comment Text</th>
+        <th class="table-secondary">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="comment : ${comments}">
+        <td th:text="${comment.id}"></td>
+        <td th:text="${comment.post.name}"></td>
+        <td th:text="${comment.commentText}"></td>
+        <td>
+            <a th:href="@{/editPostComment/{id}(id=${comment.id})}">Edit</a> |
+            <a th:href="@{/deletePostComment/{id}(id=${comment.id})}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Add Post Comment</h3>
+<form th:action="@{/addPostComment}" method="post">
+    <label>Post:
+<!--        <input class="form-control" type="text" name="post_id">-->
+        <select class="form-control" name="post_id">
+            <option th:each="post : ${posts}" th:value="${post.id}" th:text="${post.name}"></option>
+        </select>
+    </label>
+    <label>Comment Text: <input class="form-control" type="text" name="commentText"></label>
+    <button type="submit" class="operator btn btn-info">Add</button>
+</form>
+
+</body>
+</html>

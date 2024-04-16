@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PersonOrders Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><a th:href="@{/Products}">Products</a></li>
+        <li><a th:href="@{/Orders}">Orders</a></li>
+        <li><a th:href="@{/Persons}">Persons</a></li>
+        <li><a th:href="@{/Posts}">Posts</a></li>
+        <li><a th:href="@{/Types}">Types</a></li>
+        <li><a th:href="@{/PersonOrders}">PersonOrders</a></li>
+    </ul>
+</nav>
+
+<br>
+
+<h2>PersonOrders</h2>
+
+<table class="table table-hover">
+    <thead>
+    <tr class="table-secondary">
+        <th class="table-secondary">ID</th>
+        <th class="table-secondary">Person</th>
+        <th class="table-secondary">Order</th>
+        <th class="table-secondary">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="personOrder : ${personOrders}">
+        <td th:text="${personOrder.id}"></td>
+        <td th:text="${personOrder.person.username}"></td>
+        <td th:text="${personOrder.order.name}"></td>
+        <td>
+            <a th:href="@{/editPersonOrder/{id}(id=${personOrder.id})}">Edit</a> |
+            <a th:href="@{/deletePersonOrder/{id}(id=${personOrder.id})}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Add PersonOrder</h3>
+<form th:action="@{/addPersonOrder}" method="post">
+    <label>Person:
+        <select class="form-control" name="personId">
+            <option th:each="person : ${persons}" th:value="${person.id}" th:text="${person.username}"></option>
+        </select>
+    </label>
+    <label>Order:
+        <select class="form-control" name="orderId">
+            <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.name}"></option>
+        </select>
+    </label>
+    <button type="submit" class="operator btn btn-info">Add</button>
+</form>
+
+</body>
+</html>

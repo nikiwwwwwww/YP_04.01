@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class MainController {
@@ -44,6 +45,15 @@ public class MainController {
 
     @Autowired
     private TypeRepository typeRepository;
+
+    @Autowired
+    private PersonOrdersRepository personOrdersRepository;
+
+    @Autowired
+    private OrderDetailsRepository orderDetailsRepository;
+
+    @Autowired
+    private PostCommentsRepository postCommentRepository;
 
     @GetMapping("/")
     public String Main(Model model) {
@@ -95,7 +105,6 @@ public class MainController {
     }
 
 
-
     @GetMapping("/Orders")
     public String Orders(@RequestParam(name = "search", required = false) String search, Model model) {
 
@@ -113,8 +122,8 @@ public class MainController {
 
     @PostMapping("/addOrder")
     public String addOrder(@RequestParam("orderDate") Date date,
-                             @RequestParam("name") String name,
-                             @RequestParam("status") String status) {
+                           @RequestParam("name") String name,
+                           @RequestParam("status") String status) {
         int id = 0;
         Order order = new Order(id, date, name, status);
         orderDAO.save(order);
@@ -139,7 +148,6 @@ public class MainController {
         orderDAO.delete(id);
         return "redirect:/Orders";
     }
-
 
 
     @GetMapping("/Persons")
@@ -187,9 +195,6 @@ public class MainController {
     }
 
 
-
-
-
     @GetMapping("/Posts")
     public String Posts(@RequestParam(name = "search", required = false) String search, Model model) {
 
@@ -208,8 +213,8 @@ public class MainController {
 
     @PostMapping("/addPost")
     public String addPost(@RequestParam("name") String name,
-                           @RequestParam("description") String description,
-                           @RequestParam("salary") double salary) {
+                          @RequestParam("description") String description,
+                          @RequestParam("salary") double salary) {
         int id = 0;
         Post post = new Post(id, name, description, salary);
         postDAO.save(post);
@@ -236,7 +241,6 @@ public class MainController {
     }
 
 
-
     @GetMapping("/Types")
     public String Types(@RequestParam(name = "search", required = false) String search, Model model) {
 
@@ -251,10 +255,11 @@ public class MainController {
         model.addAttribute("types", types);
         return "Types";
     }
+
     @PostMapping("/addType")
     public String addType(@RequestParam("name") String name,
-                           @RequestParam("description") String description,
-                           @RequestParam("category") String category) {
+                          @RequestParam("description") String description,
+                          @RequestParam("category") String category) {
         int id = 0;
         Type type = new Type(id, name, description, category);
         typeDAO.save(type);
@@ -278,5 +283,181 @@ public class MainController {
     public String deleteType(@PathVariable int id) {
         typeDAO.delete(id);
         return "redirect:/Types";
+    }
+
+    @GetMapping("/PersonOrders")
+    public String showPersonOrders(Model model) {
+        List<PersonOrders> personOrders = personOrdersRepository.findAll();
+        List<Person> persons = personRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+
+        model.addAttribute("personOrders", personOrders);
+        model.addAttribute("persons", persons);
+        model.addAttribute("orders", orders);
+
+        return "personOrders";
+    }
+
+    @PostMapping("/addPersonOrder")
+    public String addPersonOrder(@RequestParam int personId, @RequestParam int orderId) {
+        Person person = personRepository.getById(personId);
+        Order order = orderRepository.getById(orderId);
+
+        PersonOrders personOrder = new PersonOrders();
+        personOrder.setPerson(person);
+        personOrder.setOrder(order);
+
+        personOrdersRepository.save(personOrder);
+
+        return "redirect:/PersonOrders";
+    }
+
+    @GetMapping("/deletePersonOrder/{id}")
+    public String deletePersonOrder(@PathVariable int id) {
+        personOrdersRepository.deleteById(id);
+        return "redirect:/PersonOrders";
+    }
+
+    @GetMapping("/editPersonOrder/{id}")
+    public String showEditPersonOrderForm(@PathVariable int id, Model model) {
+        Optional<PersonOrders> personOrder = personOrdersRepository.findById(id);
+        List<Person> persons = personRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+
+        personOrder.ifPresent(p -> model.addAttribute("personOrder", p));
+        model.addAttribute("persons", persons);
+        model.addAttribute("orders", orders);
+
+        return "editPersonOrder";
+    }
+
+    @PostMapping("/editPersonOrder/{id}")
+    public String editPersonOrder(@PathVariable int id, @RequestParam int personId, @RequestParam int orderId) {
+        Optional<PersonOrders> optionalPersonOrder = personOrdersRepository.findById(id);
+        Person person = personRepository.getById(personId);
+        Order order = orderRepository.getById(orderId);
+
+        if (optionalPersonOrder.isPresent()) {
+            PersonOrders personOrder = optionalPersonOrder.get();
+            personOrder.setPerson(person);
+            personOrder.setOrder(order);
+            personOrdersRepository.save(personOrder);
+        }
+
+        return "redirect:/PersonOrders";
+    }
+
+    @GetMapping("/OrderDetails")
+    public String showOrderDetails(Model model) {
+        List<OrderDetails> orderDetails = orderDetailsRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        model.addAttribute("orderDetails", orderDetails);
+        model.addAttribute("orders", orders);
+        return "OrderDetails";
+    }
+
+    @PostMapping("/addOrderDetail")
+    public String addOrderDetail(@RequestParam int orderId, @RequestParam String details) {
+        Order order = orderRepository.getById(orderId);
+        OrderDetails orderDetail = new OrderDetails();
+        orderDetail.setOrder(order);
+        orderDetail.setDetails(details);
+        orderDetailsRepository.save(orderDetail);
+        return "redirect:/OrderDetails";
+    }
+
+    @GetMapping("/editOrderDetail/{id}")
+    public String showEditOrderDetailForm(@PathVariable int id, Model model) {
+        Optional<OrderDetails> orderDetail = orderDetailsRepository.findById(id);
+        List<Order> orders = orderRepository.findAll();
+        orderDetail.ifPresent(o -> model.addAttribute("orderDetail", o));
+        model.addAttribute("orders", orders);
+        return "editOrderDetail";
+    }
+
+    @PostMapping("/editOrderDetail/{id}")
+    public String editOrderDetail(@PathVariable int id, @RequestParam int orderId, @RequestParam String details) {
+        Optional<OrderDetails> optionalOrderDetail = orderDetailsRepository.findById(id);
+        Order order = orderRepository.getById(orderId);
+
+        if (optionalOrderDetail.isPresent()) {
+            OrderDetails orderDetail = optionalOrderDetail.get();
+            orderDetail.setOrder(order);
+            orderDetail.setDetails(details);
+            orderDetailsRepository.save(orderDetail);
+        }
+
+        return "redirect:/OrderDetails";
+    }
+
+    @GetMapping("/deleteOrderDetail/{id}")
+    public String deleteOrderDetail(@PathVariable int id) {
+        orderDetailsRepository.deleteById(id);
+        return "redirect:/OrderDetails";
+    }
+
+    // Mapping to display all post comments
+    @GetMapping("/postComments")
+    public String showPostComments(Model model) {
+        List<PostComments> comments = postCommentRepository.findAll();
+        List<Post> posts = postRepository.findAll();
+
+        model.addAttribute("comments", comments);
+        model.addAttribute("posts", posts);
+
+        return "PostComments";
+    }
+
+    // Mapping to add a new post comment
+    @PostMapping("/addPostComment")
+    public String addPostComment(@RequestParam(name = "post_id") int post_id, @RequestParam String commentText) {
+        Post post = postRepository.getById(post_id);
+        PostComments postComments = new PostComments();
+        postComments.setPost(post);
+        postComments.setCommentText(commentText);
+        postCommentRepository.save(postComments);
+
+        return "redirect:/postComments";
+    }
+
+    // Mapping to delete a post comment
+    @GetMapping("/deletePostComment/{id}")
+    public String deletePostComment(@PathVariable int id) {
+        postCommentRepository.deleteById(id);
+        return "redirect:/postComments";
+    }
+
+    // Mapping to show the edit form
+    @GetMapping("/editPostComment/{id}")
+    public String showEditPostCommentForm(@PathVariable int id, Model model) {
+        Optional<PostComments> comment = postCommentRepository.findById(id);
+
+        if (comment.isPresent()) {
+            List<Post> posts = postRepository.findAll();
+            model.addAttribute("comment", comment.get());
+            model.addAttribute("posts", posts);
+            return "editPostComment";
+        } else {
+            // Handle the case when the comment with the given ID is not found.
+            // You might want to redirect to an error page or handle it differently.
+            // For now, let's redirect to the postComments page.
+            return "redirect:/postComments";
+        }
+    }
+
+    // Mapping to process the edit form submission
+    @PostMapping("/editPostComment/{id}")
+    public String editPostComment(@PathVariable int id, @RequestParam(name = "postId") int postId, @RequestParam String commentText) {
+        Optional<PostComments> optionalComment = postCommentRepository.findById(id);
+        Optional<Post> post = postRepository.findById(postId);
+
+        if (optionalComment.isPresent() && post.isPresent()) {
+            PostComments comment = optionalComment.get();
+            comment.setPost(post.get());
+            comment.setCommentText(commentText);
+            postCommentRepository.save(comment);
+        }
+
+        return "redirect:/postComments";
     }
 }
