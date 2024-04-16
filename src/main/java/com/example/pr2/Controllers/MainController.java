@@ -10,7 +10,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,8 +55,7 @@ public class MainController {
     @Autowired
     private PostCommentsRepository postCommentRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+
 
     @GetMapping("/")
     public String Main(Model model) {
@@ -462,26 +460,7 @@ public class MainController {
 
 
 
-    @GetMapping("/registration")
-    private String RegView()
-    {
-        return "regis";
-    }
 
-    @PostMapping("/registration")
-    private String Reg(modelUser user, Model model)
-    {
-        modelUser user_from_db = userRepository.findByUsername(user.getUsername());
-        if (user_from_db != null)
-        {
-            model.addAttribute("message", "Пользователь с таким логином уже существует");
-            return "registration";
-        }
-        user.setActive(true);
-        user.setRoles(Collections.singleton(roleEnum.USER));
-        userRepository.save(user);
-        return "redirect:/login";
-    }
 
 
 }

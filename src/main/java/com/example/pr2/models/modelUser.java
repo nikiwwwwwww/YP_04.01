@@ -1,16 +1,14 @@
 package com.example.pr2.models;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 public class modelUser {
-    @javax.persistence.Id
+    public modelUser(){}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long ID_User;
     private String username;
     private String password;
     private boolean active;
@@ -20,19 +18,13 @@ public class modelUser {
     @Enumerated(EnumType.STRING)
     private Set<roleEnum> roles;
 
-
-    public modelUser(int id, String username, String password, boolean active, Set<roleEnum> roles) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.active = active;
-        this.roles = roles;
+    public Long getID_User() {
+        return ID_User;
     }
 
-    public modelUser() {
-
+    public void setID_User(Long ID_User) {
+        this.ID_User = ID_User;
     }
-
 
     public String getUsername() {
         return username;
@@ -66,12 +58,10 @@ public class modelUser {
         this.roles = roles;
     }
 
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
+    public modelUser(String username, String password, boolean active, Set<roleEnum> roles) {
+        this.username = username;
+        this.password = password;
+        this.active = active;
+        this.roles = roles;
     }
 }
