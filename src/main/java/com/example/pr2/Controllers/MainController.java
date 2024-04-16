@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,9 @@ public class MainController {
 
     @Autowired
     private PostCommentsRepository postCommentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/")
     public String Main(Model model) {
@@ -396,7 +400,6 @@ public class MainController {
         return "redirect:/OrderDetails";
     }
 
-    // Mapping to display all post comments
     @GetMapping("/postComments")
     public String showPostComments(Model model) {
         List<PostComments> comments = postCommentRepository.findAll();
@@ -408,7 +411,6 @@ public class MainController {
         return "PostComments";
     }
 
-    // Mapping to add a new post comment
     @PostMapping("/addPostComment")
     public String addPostComment(@RequestParam(name = "post_id") int post_id, @RequestParam String commentText) {
         Post post = postRepository.getById(post_id);
@@ -420,14 +422,12 @@ public class MainController {
         return "redirect:/postComments";
     }
 
-    // Mapping to delete a post comment
     @GetMapping("/deletePostComment/{id}")
     public String deletePostComment(@PathVariable int id) {
         postCommentRepository.deleteById(id);
         return "redirect:/postComments";
     }
 
-    // Mapping to show the edit form
     @GetMapping("/editPostComment/{id}")
     public String showEditPostCommentForm(@PathVariable int id, Model model) {
         Optional<PostComments> comment = postCommentRepository.findById(id);
@@ -438,14 +438,11 @@ public class MainController {
             model.addAttribute("posts", posts);
             return "editPostComment";
         } else {
-            // Handle the case when the comment with the given ID is not found.
-            // You might want to redirect to an error page or handle it differently.
-            // For now, let's redirect to the postComments page.
+
             return "redirect:/postComments";
         }
     }
 
-    // Mapping to process the edit form submission
     @PostMapping("/editPostComment/{id}")
     public String editPostComment(@PathVariable int id, @RequestParam(name = "postId") int postId, @RequestParam String commentText) {
         Optional<PostComments> optionalComment = postCommentRepository.findById(id);
@@ -460,4 +457,31 @@ public class MainController {
 
         return "redirect:/postComments";
     }
+
+
+
+
+
+    @GetMapping("/registration")
+    private String RegView()
+    {
+        return "regis";
+    }
+
+    @PostMapping("/registration")
+    private String Reg(modelUser user, Model model)
+    {
+        modelUser user_from_db = userRepository.findByUsername(user.getUsername());
+        if (user_from_db != null)
+        {
+            model.addAttribute("message", "Пользователь с таким логином уже существует");
+            return "registration";
+        }
+        user.setActive(true);
+        user.setRoles(Collections.singleton(roleEnum.USER));
+        userRepository.save(user);
+        return "redirect:/login";
+    }
+
+
 }

@@ -1,10 +1,8 @@
 package com.example.pr2.models;
 
-import jakarta.persistence.*;
 
-import javax.validation.constraints.NotBlank;
-
-
+import javax.persistence.*;
+import javax.validation.constraints.*;
 @Entity
 @Table(name = "OrderDetails")
 public class OrderDetails {

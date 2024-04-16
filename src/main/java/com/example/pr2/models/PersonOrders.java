@@ -1,7 +1,6 @@
 package com.example.pr2.models;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 @Entity
 @Table(name = "PersonOrders")
 public class PersonOrders {
