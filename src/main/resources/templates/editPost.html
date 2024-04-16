@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<h2>Edit Post</h2>
+
+<form th:action="@{/editPost/{id}(id=${post.id})}" method="post">
+    <input type="hidden" name="id" th:value="${post.id}">
+    <label>Name: <input class="form-control" type="text" name="name" th:value="${post.name}"></label>
+    <label>Description: <input class="form-control" type="text" name="description" th:value="${post.description}"></label>
+    <label>Salary: <input type="text" class="form-control" name="salary" th:value="${post.salary}"></label>
+    <button type="submit" class="operator btn btn-info">Save</button>
+</form>
+</body>
+</html>
